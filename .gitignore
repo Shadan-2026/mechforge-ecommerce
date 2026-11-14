@@ -1,0 +1,14 @@
+# Python/Django
+__pycache__/
+*.pyc
+*.sqlite3
+db.sqlite3
+
+# Virtual Environment
+env/
+venv/
+
+# Media uploads
+media/
+# Secret Environment Variables
+.env

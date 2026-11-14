@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MechForge | Custom Keyboards</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <style>
+        /* Removed scroll-behavior so our custom JS can control the speed */
+        body { background-color: #ffffff; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        .navbar { border-bottom: 1px solid #eaeaea; }
+        
+        .hero-banner {
+            background-image: url('https://images.unsplash.com/photo-1595225476474-87563907a212?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            height: 450px;
+        }
+        
+        .card { border: none; transition: opacity 0.3s ease; }
+        .card:hover { opacity: 0.75; }
+        
+        .product-img { 
+            background-color: #f4f4f4; 
+            object-fit: cover; 
+            aspect-ratio: 1/1; 
+            width: 100%; 
+            border-radius: 2px; 
+        }
+        
+        .btn-minimal { 
+            background-color: #000; 
+            color: #fff; 
+            border-radius: 2px; 
+            font-weight: 500; 
+            text-transform: uppercase; 
+            font-size: 0.85rem; 
+            letter-spacing: 1px; 
+        }
+        .btn-minimal:hover { background-color: #333; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4 tracking-wide" href="/">MECHFORGE</a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto fw-medium">
+                    <li class="nav-item"><a class="nav-link px-4 text-dark" href="/">SWITCHES</a></li>
+                    <li class="nav-item"><a class="nav-link px-4 text-dark" href="#">KEYBOARDS</a></li>
+                    <li class="nav-item"><a class="nav-link px-4 text-dark" href="#">KEYCAPS</a></li>
+                </ul>
+                <div class="d-flex">
+                    <a href="/cart/" class="nav-link text-dark fw-bold">Cart ({{ cart_count|default:0 }})</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero-banner d-flex align-items-center justify-content-center mb-5">
+        <div class="text-center bg-white p-4" style="max-width: 500px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+            <h2 class="fw-bold mb-3">CUSTOM KEYBOARDS</h2>
+            <p class="text-muted mb-4">Build your endgame mechanical keyboard.</p>
+            <!-- Added id="slow-scroll-btn" to target this with JS -->
+            <a href="#product-grid" id="slow-scroll-btn" class="btn btn-minimal px-4 py-2">SHOP IN STOCK</a>
+        </div>
+    </div>
+
+    <div id="product-grid" class="container mb-5">
+        <div class="row">
+            
+            {% for product in products %}
+            <div class="col-md-3 mb-5">
+                <div class="card h-100">
+                    <a href="{% url 'product_detail' product.id %}">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" class="product-img mb-3" alt="{{ product.name }}">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?q=80&w=400&auto=format&fit=crop" class="product-img mb-3" alt="Placeholder">
+                        {% endif %}
+                    </a>
+                    
+                    <div class="card-body p-0 d-flex flex-column text-start">
+                        <a href="{% url 'product_detail' product.id %}" class="text-decoration-none text-dark">
+                            <h6 class="card-title fw-bold mb-1">{{ product.name }}</h6>
+                        </a>
+                        <p class="card-text text-muted small flex-grow-1 mb-2">{{ product.description|truncatewords:8 }}</p>
+                        <p class="text-dark fw-bold mb-3">₹{{ product.price }}</p>
+                        
+                        <form action="{% url 'add_to_cart' product.id %}" method="POST" class="mt-auto">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-minimal w-100 py-2">ADD TO CART</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+        </div>
+    </div>
+
+    <!-- Custom Slow Scroll Script -->
+    <script>
+        document.getElementById('slow-scroll-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.getElementById('product-grid');
+            const targetPosition = target.getBoundingClientRect().top + window.scrollY;
+            const startPosition = window.scrollY;
+            const distance = targetPosition - startPosition;
+            
+            // Edit this number to change the speed (1200 = 1.2 seconds)
+            const duration = 1200; 
+            let start = null;
+
+            function animation(currentTime) {
+                if (start === null) start = currentTime;
+                const timeElapsed = currentTime - start;
+                
+                // Easing function for a cinematic start and stop
+                const ease = (t, b, c, d) => {
+                    t /= d / 2;
+                    if (t < 1) return c / 2 * t * t * t + b;
+                    t -= 2;
+                    return c / 2 * (t * t * t + 2) + b;
+                };
+
+                window.scrollTo(0, ease(timeElapsed, startPosition, distance, duration));
+
+                if (timeElapsed < duration) {
+                    requestAnimationFrame(animation);
+                }
+            }
+
+            requestAnimationFrame(animation);
+        });
+    </script>
+</body>
+</html>
