@@ -11,8 +11,6 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
-import os
-from dotenv import load_dotenv
 
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -130,7 +128,7 @@ MAILERS = {
     },
 }
 # Add this at the very bottom
-STRIPE_SECRET_KEY = os.environ.get('sk_test_51Ub0XY3bnnLqOYcJLCSlUplYSvTKjn4oB5GHLp6A0oeN8DTsTFIp3ldM32Tmx7BnLTWXWMihGrrdMiGU6glqwkNH00km4BR7Jj')
+STRIPE_SECRET_KEY = "sk_test_placeholder_key_for_github"
 import os
 
 MEDIA_URL = '/media/'
